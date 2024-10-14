@@ -1,0 +1,71 @@
+# Xcode
+.DS_Store
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcworkspace
+xcuserdata
+*.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+Packages
+.build/
+DerivedData/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+fastlane/tests_output/
+
+# Archives
+*.xcarchive
+
+# Derived Data
+DerivedData/
+
+# Logs
+*.log
+*.log.*
+
+# Temporary files
+tmp/
+temp/
+
+# Build products
+build/
+*.ipa
+*.app.dSYM.zip
+*.app.dSYM
+
+# Xcode generated
+*.plist
+
+# Symbols
+*.bcsymbolmap
+
+# Signing
+*.p12
+*.mobileprovision
+
+# SwiftUI Previews
+*.preview-thumbs
+*.preview
+
+# Dependency Manager Lock Files
+Cartfile.resolved
+Package.resolved
+
+# App Store Connect
+*.itmsp
