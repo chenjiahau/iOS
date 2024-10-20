@@ -1,13 +1,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var todos: [Todo]?
+    @EnvironmentObject private var store: Store
 
-    let todoClient = TodoClient()
-
-    private func fetchTodoList() async {
+    private func populateTodos() async {
         do {
-            todos = try await todoClient.getAll()
+           try await store.getAll()
         } catch {
             print(error)
         }
@@ -18,16 +16,15 @@ struct ContentView: View {
             VStack {
                 Text("Todo List")
                     .font(.largeTitle)
-                List(todos ?? []) { todo in
+                List(store.todos) { todo in
                     NavigationLink(destination: ContentDetailView(id: todo.id)) {
                         Text(todo.title)
                     }
                 }
-                .background(.white)
             }
-            .task {
-                await fetchTodoList()
-            }
+        }
+        .task {
+            await populateTodos()
         }
     }
 }

@@ -1,14 +1,12 @@
 import SwiftUI
 
 struct ContentDetailView: View {
-    let id: Int?
-    @State private var todo: Todo?
+    @EnvironmentObject private var store: Store
+    let id: Int
     
-    let todoClient = TodoClient()
-
-    private func fetchTodoDetail() async {
+    private func populateTodo() async {
         do {
-            todo = try await todoClient.getById(id: id!)
+            try await store.getById(id: id)
         } catch {
             print(error)
         }
@@ -16,14 +14,14 @@ struct ContentDetailView: View {
     
     var body: some View {
         VStack {
-            if let todo {
+            if let todo = store.todo {
                 Text("Id: \(todo.id)")
                 Text("Title: \(todo.title)")
                 Text("Status: \(MeasurementFormatter.status(value: todo.completed))")
             }
         }
         .task {
-            await fetchTodoDetail()
+            await populateTodo()
         }
     }
 }
