@@ -14,7 +14,7 @@ enum LoginError: LocalizedError, Identifiable {
     var id: Int {
         hashValue
     }
-    
+
     var errorDescription: String? {
         switch self {
         case .account:
@@ -37,24 +37,19 @@ struct LoginView: View {
     }
     
     var isFormValid: Bool {
+        var hasError = false
+
         DispatchQueue.main.async {
             clearLoginError()
         }
 
-        if isAccountDirty && (account.isEmpty || account.count < 8 || account.count > 64) {
+        if (isAccountDirty && (account.isEmpty || account.count < 8 || account.count > 64))
+        || (isAccountDirty && !checkEmail(email: account)) {
             DispatchQueue.main.async {
                 loginErrors.append(.account)
             }
-
-            return false
-        }
-
-        if isAccountDirty && !checkEmail(email: account) {
-            DispatchQueue.main.async {
-                loginErrors.append(.account)
-            }
-
-            return false
+ 
+            hasError = true
         }
 
         if isPasswordDirty && (password.isEmpty || password.count < 8 || password.count > 64) {
@@ -62,18 +57,15 @@ struct LoginView: View {
                 loginErrors.append(.password)
             }
 
-            return false
+            hasError = true
         }
 
-        return true
+        return !hasError
     }
     
     var body: some View {
         Form {
-            ForEach(loginErrors) { loginError in
-                Text(loginError.localizedDescription)
-                    .foregroundStyle(.red)
-            }
+            LoginErrorsView(loginErrors: loginErrors)
             TextField("Account", text: $account)
                 .textInputAutocapitalization(.never)
                 .onChange(of: account) { oldValue, newValue in
