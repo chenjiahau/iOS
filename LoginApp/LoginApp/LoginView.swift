@@ -12,12 +12,25 @@ struct LoginView: View {
     @State private var password: String = ""
     
     var isFormValid: Bool {
-        return !account.isEmpty && !password.isEmpty
+        if (account.isEmpty || account.count < 8 || account.count > 64) {
+            return false
+        }
+        
+        if (!checkEmail(email: account)) {
+            return false
+        }
+
+        if (password.isEmpty || password.count < 8 || password.count > 64) {
+            return false
+        }
+        
+        return true
     }
     
     var body: some View {
         Form {
             TextField("Account", text: $account)
+                .textInputAutocapitalization(.never)
             SecureField("Password", text: $password)
             Button("Sign in") {
                 print("Your account is \(account)")
