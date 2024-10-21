@@ -7,28 +7,33 @@
 
 import SwiftUI
 
-struct LoginError {
-    var account: String = ""
-    var password: String = ""
-    
-    mutating func changeAccountMessage(message: String) {
-        self.account = message
+enum LoginError: LocalizedError, Identifiable {
+    case account
+    case password
+
+    var id: Int {
+        hashValue
     }
     
-    mutating func changePasswordMessage(message: String) {
-        self.password = message
+    var errorDescription: String? {
+        switch self {
+        case .account:
+            return "Invalid account"
+        case .password:
+            return "Invalid password"
+        }
     }
 }
 
 struct LoginView: View {
     @State private var account: String = ""
     @State private var password: String = ""
-    @State private var accountIsDirty: Bool = false
-    @State private var passwordIsDirty: Bool = false
-    @State private var loginError = LoginError()
+    @State private var isAccountDirty: Bool = false
+    @State private var isPasswordDirty: Bool = false
+    @State private var loginErrors: [LoginError] = []
     
     func clearLoginError() {
-        loginError = LoginError()
+        loginErrors = []
     }
     
     var isFormValid: Bool {
@@ -36,25 +41,25 @@ struct LoginView: View {
             clearLoginError()
         }
 
-        if account.isEmpty || account.count < 8 || account.count > 64 {
+        if isAccountDirty && (account.isEmpty || account.count < 8 || account.count > 64) {
             DispatchQueue.main.async {
-                loginError.changeAccountMessage(message: "Invalid account")
+                loginErrors.append(.account)
             }
 
             return false
         }
 
-        if !checkEmail(email: account) {
+        if isAccountDirty && !checkEmail(email: account) {
             DispatchQueue.main.async {
-                loginError.changeAccountMessage(message: "Invalid account")
+                loginErrors.append(.account)
             }
 
             return false
         }
 
-        if password.isEmpty || password.count < 8 || password.count > 64 {
+        if isPasswordDirty && (password.isEmpty || password.count < 8 || password.count > 64) {
             DispatchQueue.main.async {
-                loginError.changePasswordMessage(message: "Invalid password")
+                loginErrors.append(.password)
             }
 
             return false
@@ -65,23 +70,19 @@ struct LoginView: View {
     
     var body: some View {
         Form {
+            ForEach(loginErrors) { loginError in
+                Text(loginError.localizedDescription)
+                    .foregroundStyle(.red)
+            }
             TextField("Account", text: $account)
                 .textInputAutocapitalization(.never)
                 .onChange(of: account) { oldValue, newValue in
-                    accountIsDirty = true
+                    isAccountDirty = true
                 }
-            if (accountIsDirty && !loginError.account.isEmpty) {
-                Text(loginError.account)
-                    .foregroundStyle(.red)
-            }
             SecureField("Password", text: $password)
                 .onChange(of: password) { oldValue, newValue in
-                    passwordIsDirty = true
+                    isPasswordDirty = true
                 }
-            if (passwordIsDirty && !loginError.password.isEmpty) {
-                Text(loginError.password)
-                    .foregroundStyle(.red)
-            }
             Button("Sign in") {
                 print("Your account is \(account)")
                 print("Your password is \(password)")
